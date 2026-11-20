@@ -1,43 +1,78 @@
 # 5G / 4G Switch — Moto Edge 40 (no ADB, no root, no PC)
 
-## Install
-1. Open `Moto-5G-4G-Switch.apk` on your Moto Edge 40.
-2. If asked, allow "Install unknown apps" for your browser / Files app (one-time Android prompt for sideloading).
+One-tap network switching for the Motorola Edge 40, tested on-device.
+Version 22. No permissions, no internet access, no ads.
+
+## What it does
+
+- **5G ONLY** — sets the preferred network type to NR only.
+- **4G ONLY** — sets it to LTE only.
+- **AUTO (NORMAL)** — restores the normal auto mode.
+- **TURN ON n78 BAND** — first sets 5G Only, then disables band 28 and enables band 78, for both SA and NSA (the Jio / Airtel 5G band).
+- **TURN ON n28 BAND** — the reverse: first sets 5G Only, then disables band 78 and enables band 28, for both SA and NSA.
+- **RESET EVERYTHING** — enables bands 28 and 78 (SA and NSA), then switches the network back to Auto.
+
+Every workflow ends back on the home screen once its last step is confirmed.
+Quick Settings tiles are available for 5G/4G, n78, n28, Reset All and the
+Testing Menu (use **ADD SHORTCUT TILES** in the app), plus a home-screen widget.
+
+## Install (from the APK)
+
+1. Open the built `Moto-5G-4G-Switch.apk` on your Moto Edge 40.
+   (The APK is a build output — it is not stored in this repo.)
+2. If asked, allow "Install unknown apps" for your browser / Files app
+   (one-time Android prompt for sideloading).
 3. Install and open **5G 4G Switch**.
 
-The app asks for **no permissions**, has no internet access, no ads, and is only 21 KB.
+## One-time setup
 
-## Use — fully automatic (v3)
-1. Open the app and tap **ENABLE AUTO-TAP (ONE-TIME)**.
+1. Open the app and tap **ONE-TIME SETUP**.
 2. In Accessibility settings: **Installed apps → 5G / 4G Auto-Tap → ON → Allow**.
-3. Come back to the app — the status should say **AUTO-TAP: ON**.
+3. Come back to the app — the status should say the auto-tap is on.
 
-From now on:
-- Tap **5G ONLY** → the app opens Phone Information, opens the dropdown and selects **NR only** by itself. You'll see a "Done: 5G Only selected" toast.
-- Tap **4G ONLY** → same, selects **LTE only**.
-- Tap **AUTO (DEFAULT)** → same, selects the default NR/LTE/... auto mode.
+From then on, just tap a button and wait a few seconds for the "Done" toast.
+If a run stalls, tap **COPY LOG** in Help and share the log — it records
+every step the auto-tap took.
 
-The auto-tap service only acts within 60 seconds of you tapping a mode button, and only on the Phone Information screen. It does nothing anywhere else. If auto-tap ever can't find the dropdown (e.g. after a firmware update changes the screen), the screen stays open and you can still select manually as in v1.
+## How it works
 
-## Use — manual fallback (Auto-Tap off)
-- Tap **5G ONLY** → tap **Open Phone Info >** → scroll to **Set preferred network type** → select **NR only**
-- Tap **4G ONLY** → tap **Open Phone Info >** → scroll to **Set preferred network type** → select **LTE only**
-- Tap **AUTO (DEFAULT)** to undo → select the long option starting **NR/LTE/...**
-
-### Make it 1 tap to open
-- **Widget:** Long-press home screen → Widgets → *5G / 4G Switch* → drag it to your home screen. Its buttons open the app straight in the right mode.
-- **Quick Settings tile:** Swipe down twice → pencil/edit icon → add the *5G / 4G Switch* tile.
-
-### Dual SIM
-On the Phone Information screen, use the SIM / phone-index selector at the top if present. If your firmware instead shows a "Testing" list, open **Phone information1** or **Phone information2** for the SIM you want.
-
-## Why can't an app do it in exactly 1 tap with no second screen?
-Android reserves changing the preferred network type for system apps (`MODIFY_PHONE_STATE` signature permission). Without root or ADB/Shizuku, no normal app — this one or any Play Store "Force LTE" app — can set NR only / LTE only silently. They all open this same hidden Phone Information screen. This app removes everything else: no dialing `*#*#4636#*#*`, no Testing menu, no ads.
+Android only lets system apps change the preferred network type silently,
+so the app opens the hidden Phone Information screen and selects the mode
+for you with an accessibility auto-tap. The band flows open the Testing /
+Debugging screens the same way (the app types `*#*#4636#*#*` in the dialer
+itself — it never places a call). The auto-tap only acts on the Phone
+Information / Testing screens, and stops the moment you leave them.
+There is a **STOP** button in the app to cancel a run.
 
 ## Warnings
-- **5G Only (NR only):** if 5G coverage drops, you get *no signal* instead of falling back to 4G. Calls need VoNR — Jio True5G supports it in most areas; on Airtel, incoming/outgoing calls may fail in NR-only mode. Switch back to AUTO if people say you're unreachable.
+
+- **5G Only (NR only):** if 5G coverage drops, you get *no signal* instead
+  of falling back to 4G. Calls need VoNR — Jio True5G supports it in most
+  areas; on Airtel, calls may fail in NR-only mode. Switch back to AUTO if
+  people say you're unreachable.
 - **4G Only (LTE only):** calls keep working on VoLTE; you just lose 5G speeds.
 - A reboot or SIM change can reset the setting on some builds — just re-apply it.
 
+## Build from source
+
+`build.sh` is a plain script (no Gradle): it compiles the resources and
+Java with `aapt2` / `javac` / `d8`, then aligns and signs the APK
+(minSdk 26, targetSdk 34, versionCode 22).
+
+It expects a JDK at `tools/jdk` and an Android SDK at `tools/sdk`
+(build-tools 34.0.0, platform android-34). Those are downloaded toolchains
+and are **not** in this repo (see `.gitignore`) — place them under `tools/`
+first, then run:
+
+```
+./build.sh
+```
+
+Signing: if `keystore.jks` is missing, `build.sh` creates one. The keystore
+is git-ignored and must never be committed — keep it private, or updates
+signed with a different key won't install over the old app.
+
 ## No-install fallback (same thing, by hand)
-Dial `*#*#4636#*#*` in the stock Phone app → **Phone information** → **Set preferred network type** → **NR only** / **LTE only**.
+
+Dial `*#*#4636#*#*` in the stock Phone app → **Phone information** →
+**Set preferred network type** → **NR only** / **LTE only**.

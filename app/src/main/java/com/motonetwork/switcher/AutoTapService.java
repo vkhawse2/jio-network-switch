@@ -148,7 +148,7 @@ public class AutoTapService extends AccessibilityService {
     // ---------- lifecycle / events ----------
     @Override
     protected void onServiceConnected() {
-        DiagLog.add(this, "Auto-tap service connected (v22)");
+        DiagLog.add(this, "Auto-tap service connected (v23)");
         healSavedDefault();
     }
 

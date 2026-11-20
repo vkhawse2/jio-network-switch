@@ -14,6 +14,7 @@ import android.provider.Settings;
 import android.service.quicksettings.TileService;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,15 +65,8 @@ public class MainActivity extends Activity {
             refreshAutoStatus();
         });
 
-        Button copy = findViewById(R.id.btnCopyLog);
-        copy.setOnClickListener(v -> {
-            android.content.ClipboardManager cm =
-                    (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            cm.setPrimaryClip(android.content.ClipData.newPlainText("log", DiagLog.get(this)));
-            Toast.makeText(this, "Log copied - paste it in the chat with Muse", Toast.LENGTH_LONG).show();
-        });
-        Button clear = findViewById(R.id.btnClearLog);
-        clear.setOnClickListener(v -> { DiagLog.clear(this); refreshAutoStatus(); });
+        Button menuBtn = findViewById(R.id.btnMenu);
+        menuBtn.setOnClickListener(v -> showMenu(v));
 
         String mode = getIntent() != null ? getIntent().getStringExtra("mode") : null;
         if (mode != null) askAndOpen(mode);
@@ -109,8 +103,6 @@ public class MainActivity extends Activity {
     private void refreshAutoStatus() {
         TextView tv = findViewById(R.id.autoStatus);
         Button enable = findViewById(R.id.btnEnableAuto);
-        TextView log = findViewById(R.id.diagLog);
-        if (log != null) log.setText(DiagLog.get(this));
         if (tv == null) return;
         if (isAutoTapEnabled(this)) {
             tv.setText("Ready — just tap a button below.");
@@ -119,6 +111,76 @@ public class MainActivity extends Activity {
             tv.setText("One-time setup needed — tap the orange button below. It takes 30 seconds, only once.");
             enable.setVisibility(View.VISIBLE);
         }
+    }
+
+    // ---------- 3-dot menu: manual + log ----------
+
+    private void showMenu(View anchor) {
+        PopupMenu menu = new PopupMenu(this, anchor);
+        menu.getMenu().add(0, 1, 0, "How to use");
+        menu.getMenu().add(0, 2, 1, "View log");
+        menu.getMenu().add(0, 3, 2, "Copy log");
+        menu.getMenu().add(0, 4, 3, "Clear log");
+        menu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case 1: showHowTo(); return true;
+                case 2: showLogDialog(); return true;
+                case 3: copyLog(); return true;
+                case 4:
+                    DiagLog.clear(this);
+                    Toast.makeText(this, "Log cleared", Toast.LENGTH_SHORT).show();
+                    return true;
+                default: return false;
+            }
+        });
+        menu.show();
+    }
+
+    private void copyLog() {
+        android.content.ClipboardManager cm =
+                (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        cm.setPrimaryClip(android.content.ClipData.newPlainText("log", DiagLog.get(this)));
+        Toast.makeText(this, "Log copied - paste it wherever you need it", Toast.LENGTH_LONG).show();
+    }
+
+    private void showLogDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle("Log")
+            .setMessage(DiagLog.get(this))
+            .setPositiveButton("Copy", (d, w) -> copyLog())
+            .setNegativeButton("Close", null)
+            .show();
+    }
+
+    private void showHowTo() {
+        new AlertDialog.Builder(this)
+            .setTitle("How to use")
+            .setMessage(
+                "ONE-TIME SETUP (only once)\n" +
+                "Tap the orange setup button, then: Installed apps > \"5G / 4G Auto-Tap\" > switch ON > Allow. After that, every button works with a single tap.\n\n" +
+                "5G ONLY\n" +
+                "Uses only 5G - fastest. If the 5G signal is lost you may get no signal until you switch back. Calls need VoNR.\n\n" +
+                "4G ONLY\n" +
+                "Uses only 4G / LTE.\n\n" +
+                "AUTO (NORMAL)\n" +
+                "The phone's normal mode - it picks 5G / 4G / 3G / 2G by itself.\n\n" +
+                "TURN ON n78 BAND\n" +
+                "First sets 5G Only, then turns band 28 OFF and band 78 ON (for SA and NSA). Strong, fast 5G in cities (Jio / Airtel).\n\n" +
+                "TURN ON n28 BAND\n" +
+                "First sets 5G Only, then turns band 78 OFF and band 28 ON (for SA and NSA). 5G that reaches further - better indoors and in villages.\n\n" +
+                "RESET EVERYTHING\n" +
+                "Back to normal: first turns bands 28 and 78 ON (SA and NSA), then sets the network to Auto.\n\n" +
+                "ADD SHORTCUT TILES\n" +
+                "Puts the same actions in your Quick Settings panel - pull down twice from the top of the screen and tap a tile.\n\n" +
+                "STOP\n" +
+                "Cancels a running action right away.\n\n" +
+                "GOOD TO KNOW\n" +
+                "- Every action ends back on your home screen when it finishes.\n" +
+                "- Works on SIM 1.\n" +
+                "- No computer, no root, nothing else needed.\n" +
+                "- Something not working? Menu (top right) > Copy log, and send it to the person who gave you this app.")
+            .setPositiveButton("Got it", null)
+            .show();
     }
 
     private void showEnableInstructions() {

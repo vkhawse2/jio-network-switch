@@ -14,7 +14,7 @@ echo "== compile resources =="
 "$BT/aapt2" link -o "$OUT/app-unsigned.apk" -I "$JAR" \
   --manifest "$SRC/AndroidManifest.xml" "$OUT/res.zip" \
   --java "$OUT/gen" --min-sdk-version 26 --target-sdk-version 34 \
-  --version-code 22 --version-name 22.0
+  --version-code 23 --version-name 23.0
 
 echo "== compile java =="
 find "$SRC/java" "$OUT/gen" -name "*.java" > "$OUT/sources.txt"

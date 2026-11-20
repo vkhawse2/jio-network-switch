@@ -9,27 +9,36 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="5G / 4G Switch"
-            android:textColor="#FFFFFF"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="For Moto Edge 40 · No computer needed"
-            android:textColor="#94A3B8"
-            android:textSize="15sp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="5G / 4G Switch"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnMenu"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="#1E293B"
+                android:text="⋮"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/autoStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             android:background="#1E293B"
             android:padding="14dp"
             android:textColor="#FDE68A"
@@ -51,7 +60,7 @@
             android:id="@+id/btn5g"
             android:layout_width="match_parent"
             android:layout_height="76dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="24dp"
             android:backgroundTint="#16A34A"
             android:text="5G ONLY"
             android:textColor="#FFFFFF"
@@ -80,6 +89,28 @@
             android:textSize="18sp" />
 
         <Button
+            android:id="@+id/btnN78"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="14dp"
+            android:backgroundTint="#7C3AED"
+            android:text="TURN ON n78 BAND"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnN28"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="14dp"
+            android:backgroundTint="#B45309"
+            android:text="TURN ON n28 BAND"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
             android:id="@+id/btnReset"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -88,44 +119,6 @@
             android:text="RESET EVERYTHING"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
-            android:text="Extra: 5G Only + band 28 OFF + band 78 ON (Jio / Airtel)"
-            android:textColor="#CBD5E1"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/btnN78"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#7C3AED"
-            android:text="TURN ON n78 BAND"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="Or the reverse: 5G Only + band 78 OFF + band 28 ON"
-            android:textColor="#CBD5E1"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/btnN28"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#B45309"
-            android:text="TURN ON n28 BAND"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
             android:textStyle="bold" />
 
         <Button
@@ -147,70 +140,5 @@
             android:text="ADD SHORTCUT TILES"
             android:textColor="#FFFFFF"
             android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:textColor="#CBD5E1"
-            android:textSize="14sp"
-            android:text="Just tap a button — the app changes the setting for you.\n\nNote: in 5G ONLY, if the 5G signal is lost you may get no signal. Tap AUTO to go back to normal. Works on SIM 1." />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="Help"
-            android:textColor="#64748B"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Something not working? Tap COPY LOG and send it to the person who gave you this app."
-            android:textColor="#94A3B8"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/diagLog"
-            android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:layout_marginTop="6dp"
-            android:background="#020617"
-            android:padding="10dp"
-            android:scrollbars="vertical"
-            android:textColor="#A5B4FC"
-            android:textSize="11sp"
-            android:text="(no log yet)" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnCopyLog"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:backgroundTint="#334155"
-                android:text="COPY LOG"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp" />
-
-            <Button
-                android:id="@+id/btnClearLog"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="#334155"
-                android:text="CLEAR LOG"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp" />
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>
