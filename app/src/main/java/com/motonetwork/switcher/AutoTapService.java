@@ -46,6 +46,7 @@ public class AutoTapService extends AccessibilityService {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean working = false;
+    private long graceUntilMs = 0;
     private boolean spinnerClicked = false;
     private int stageAScrolls = 0;
     private int popupPhase = 0;   // 0 = sweeping UP to the top of the list, 1 = sweeping DOWN
@@ -101,6 +102,7 @@ public class AutoTapService extends AccessibilityService {
                 p.edit().putString("target_mode", then)
                         .putLong("target_time", System.currentTimeMillis())
                         .remove("then_mode").apply();
+                graceUntilMs = System.currentTimeMillis() + 3000;
                 spinnerClicked = false;
                 stageAScrolls = 0; popupPhase = 0;
                 upScrolls = 0; downScrolls = 0; downStuck = 0;
@@ -148,7 +150,7 @@ public class AutoTapService extends AccessibilityService {
     // ---------- lifecycle / events ----------
     @Override
     protected void onServiceConnected() {
-        DiagLog.add(this, "Auto-tap service connected (v23)");
+        DiagLog.add(this, "Auto-tap service connected (v24)");
         healSavedDefault();
     }
 
@@ -179,6 +181,10 @@ public class AutoTapService extends AccessibilityService {
             working = true;
             n78Stage = 0;
             n78Wait = 0;
+            n78OpIndex = 0;
+            n78OpStep = 0;
+            n78ConfirmTries = 0;
+            n78DumpedOp = -1;
             dialIndex = 0;
         dialRetries = 0; clearTries = 0; dialCleared = false;
             dialRetries = 0; clearTries = 0; dialCleared = false;
@@ -187,6 +193,7 @@ public class AutoTapService extends AccessibilityService {
             return;
         }
         if (working && !allowed && !isBandMode(targetMode())) {
+            if (System.currentTimeMillis() < graceUntilMs) return; // phase hand-over in progress
             // User moved to another real app mid-run: stop at once, touch nothing there.
             abort("user left Phone info (now in " + pkg + ")");
             return;
