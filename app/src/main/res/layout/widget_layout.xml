@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#0F172A"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <Button
+        android:id="@+id/w5g"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_weight="1"
+        android:backgroundTint="#16A34A"
+        android:text="5G ONLY"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/w4g"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:backgroundTint="#2563EB"
+        android:text="4G ONLY"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/wAuto"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:backgroundTint="#475569"
+        android:text="AUTO"
+        android:textColor="#FFFFFF" />
+</LinearLayout>

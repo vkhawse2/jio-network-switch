@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">5G 4G Switch - Moto Edge 40</string>
+    <string name="accessibility_desc">Auto-tap for the 5G / 4G Switch app. Only acts right after you tap 5G Only, 4G Only or Auto in the app, and only on Android\'s Phone Information screen, where it selects the network type for you. It does nothing on any other screen.</string>
+</resources>
