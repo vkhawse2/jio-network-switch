@@ -82,12 +82,30 @@ public class AutoTapService extends AccessibilityService {
                 .remove("target_mode").remove("then_mode").apply();
     }
 
+    /** UPI-safe (v26): UPI / banking apps block phones while an accessibility
+     *  service that can read the screen and tap is switched ON. So after
+     *  every run ends — success or stop — this service turns ITSELF off.
+     *  Between switches the service is OFF and UPI works normally. The user
+     *  re-enables it with the one toggle in the app before the next switch. */
+    private void autoOffAfter(long delayMs) {
+        DiagLog.add(this, "UPI-safe: Auto-Tap will turn itself OFF in " + delayMs + "ms (re-enable it in the app before the next switch)");
+        handler.postDelayed(() -> {
+            try {
+                disableSelf();
+                DiagLog.add(this, "UPI-safe: Auto-Tap is now OFF");
+            } catch (Exception e) {
+                DiagLog.add(this, "UPI-safe: disableSelf failed: " + e.getClass().getSimpleName());
+            }
+        }, delayMs);
+    }
+
     private void abort(String reason) {
         DiagLog.add(this, "STOPPED: " + reason);
         clearTarget();
         working = false;
         handler.removeCallbacks(attempt);
         Toast.makeText(this, "Auto-tap stopped", Toast.LENGTH_SHORT).show();
+        autoOffAfter(1500);
     }
 
     private void succeed(String mode, String optionText) {
@@ -145,12 +163,14 @@ public class AutoTapService extends AccessibilityService {
             boolean ok = performGlobalAction(GLOBAL_ACTION_HOME);
             DiagLog.add(this, "Home action -> " + ok);
         }, 900);
+        // Home first (900ms), then turn ourselves OFF for UPI (v26).
+        autoOffAfter(2100);
     }
 
     // ---------- lifecycle / events ----------
     @Override
     protected void onServiceConnected() {
-        DiagLog.add(this, "Auto-tap service connected (v24)");
+        DiagLog.add(this, "Auto-tap service connected (v26, UPI-safe auto-off)");
         healSavedDefault();
     }
 

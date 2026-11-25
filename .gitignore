@@ -6,3 +6,5 @@ build/
 *.idsig
 # Signing key - NEVER publish
 keystore.jks
+*.aab
+build-play/

@@ -51,7 +51,7 @@
             android:layout_height="64dp"
             android:layout_marginTop="12dp"
             android:backgroundTint="#D97706"
-            android:text="ONE-TIME SETUP — TAP HERE"
+            android:text="TURN ON AUTO-TAP — TAP HERE"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -130,6 +130,17 @@
             android:text="STOP"
             android:textColor="#FFFFFF"
             android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnUpiOff"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#0F766E"
+            android:text="TURN OFF AUTO-TAP — FOR UPI / BANKING"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnAddTiles"

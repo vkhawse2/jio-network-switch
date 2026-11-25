@@ -65,6 +65,9 @@ public class MainActivity extends Activity {
             refreshAutoStatus();
         });
 
+        Button upiOff = findViewById(R.id.btnUpiOff);
+        upiOff.setOnClickListener(v -> showUpiOffInstructions());
+
         Button menuBtn = findViewById(R.id.btnMenu);
         menuBtn.setOnClickListener(v -> showMenu(v));
 
@@ -105,10 +108,10 @@ public class MainActivity extends Activity {
         Button enable = findViewById(R.id.btnEnableAuto);
         if (tv == null) return;
         if (isAutoTapEnabled(this)) {
-            tv.setText("Ready — just tap a button below.");
+            tv.setText("Ready — just tap a button below. After the switch, Auto-Tap turns itself OFF so UPI / banking apps keep working.");
             enable.setVisibility(View.GONE);
         } else {
-            tv.setText("One-time setup needed — tap the orange button below. It takes 30 seconds, only once.");
+            tv.setText("Auto-Tap is OFF (UPI-safe). To switch, tap the orange button and turn it ON — it turns itself OFF again after the switch.");
             enable.setVisibility(View.VISIBLE);
         }
     }
@@ -118,12 +121,14 @@ public class MainActivity extends Activity {
     private void showMenu(View anchor) {
         PopupMenu menu = new PopupMenu(this, anchor);
         menu.getMenu().add(0, 1, 0, "How to use");
-        menu.getMenu().add(0, 2, 1, "View log");
-        menu.getMenu().add(0, 3, 2, "Copy log");
-        menu.getMenu().add(0, 4, 3, "Clear log");
+        menu.getMenu().add(0, 5, 1, "Privacy policy");
+        menu.getMenu().add(0, 2, 2, "View log");
+        menu.getMenu().add(0, 3, 3, "Copy log");
+        menu.getMenu().add(0, 4, 4, "Clear log");
         menu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case 1: showHowTo(); return true;
+                case 5: showPrivacyPolicy(); return true;
                 case 2: showLogDialog(); return true;
                 case 3: copyLog(); return true;
                 case 4:
@@ -156,8 +161,10 @@ public class MainActivity extends Activity {
         new AlertDialog.Builder(this)
             .setTitle("How to use")
             .setMessage(
-                "ONE-TIME SETUP (only once)\n" +
-                "Tap the orange setup button, then: Installed apps > \"5G / 4G Auto-Tap\" > switch ON > Allow. After that, every button works with a single tap.\n\n" +
+                "SETUP (quick, before each switch)\n" +
+                "Tap the orange setup button, then: Installed apps > \"5G / 4G Auto-Tap\" > switch ON > Allow. Then every button works with a single tap.\n\n" +
+                "UPI / BANKING APPS\n" +
+                "Banks block UPI while a screen-reading / auto-tap service is ON. So this app turns Auto-Tap OFF by itself as soon as a switch finishes — UPI works normally the rest of the time. You just switch Auto-Tap ON again before your next switch. If a UPI app complains while Auto-Tap is ON, use the \"TURN OFF AUTO-TAP — FOR UPI / BANKING\" button on the main screen.\n\n" +
                 "5G ONLY\n" +
                 "Uses only 5G - fastest. If the 5G signal is lost you may get no signal until you switch back. Calls need VoNR.\n\n" +
                 "4G ONLY\n" +
@@ -183,18 +190,63 @@ public class MainActivity extends Activity {
             .show();
     }
 
-    private void showEnableInstructions() {
+    /** UPI-safe (v26): only the service itself can switch itself off, and it
+     *  now does that automatically after every run. This button covers the
+     *  in-between case (service ON, no run): it takes the user straight to
+     *  the accessibility toggle so UPI works right away. */
+    private void showUpiOffInstructions() {
+        if (!isAutoTapEnabled(this)) {
+            Toast.makeText(this, "Auto-Tap is already OFF — UPI / banking apps should work now. If one still complains, close and reopen it.", Toast.LENGTH_LONG).show();
+            return;
+        }
         new AlertDialog.Builder(this)
-            .setTitle("One-time setup")
-            .setMessage("Follow these steps — only once:\n\n1. On the next screen, tap \"Installed apps\"\n2. Tap \"5G / 4G Auto-Tap\"\n3. Switch it ON and tap Allow\n\nThen come back here and tap any button. The app does everything by itself from now on.\n\nWhy is this needed? Android asks you to switch this on yourself — no app is allowed to do it for you. Nothing else is needed: no computer, no root.")
-            .setPositiveButton("Start setup >", (d, w) -> {
+            .setTitle("Turn OFF Auto-Tap for UPI")
+            .setMessage("UPI and banking apps stop working while any app that can read the screen and tap is switched on — that's a safety rule from the banks, not a fault in your phone.\n\n" +
+                "Good news: from now on Auto-Tap turns itself OFF automatically after every switch finishes, so you normally don't need this button.\n\n" +
+                "If a UPI app is complaining right now, tap \"Open settings\" and switch \"5G / 4G Auto-Tap\" OFF there, then close and reopen your UPI app.")
+            .setPositiveButton("Open settings >", (d, w) -> {
                 try {
                     startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                 } catch (Exception e) {
                     startActivity(new Intent(Settings.ACTION_SETTINGS));
                 }
             })
-            .setNegativeButton("Later", null)
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
+    private void showEnableInstructions() {
+        new AlertDialog.Builder(this)
+            .setTitle("One-time setup — please read")
+            .setMessage("This app uses an Accessibility Service called \"5G / 4G Auto-Tap\".\n\n" +
+                "WHAT IT DOES\n" +
+                "Only after you tap a button in this app (for example 5G Only), the service looks at the screen content of Android's Phone Information and Testing / Debugging screens and taps the option you chose for you — the network mode or the band. It works only on those screens, only right after your tap, and stops as soon as you leave them or press STOP.\n\n" +
+                "WHAT DATA IT ACCESSES\n" +
+                "It reads the text and buttons shown on those two system screens so it can find the right option to tap. It does NOT collect, store, share or send any personal data. It has no internet access, and nothing it sees ever leaves your phone. The only thing saved on the phone is a short log of the steps it took, which you can view, copy or clear from the menu.\n\n" +
+                "Android asks you to switch this on yourself — no app is allowed to do it for you. If you agree, tap \"Agree and start setup\":\n\n1. On the next screen, tap \"Installed apps\"\n2. Tap \"5G / 4G Auto-Tap\"\n3. Switch it ON and tap Allow\n\nThen come back here and tap any button. Nothing else is needed: no computer, no root.\n\nUPI NOTE: UPI / banking apps block phones while a service like this is ON, so Auto-Tap turns itself OFF automatically as soon as each switch finishes. That means you switch it ON before a switch, and it is OFF again right after — UPI keeps working in between.")
+            .setPositiveButton("Agree and start setup >", (d, w) -> {
+                try {
+                    startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                } catch (Exception e) {
+                    startActivity(new Intent(Settings.ACTION_SETTINGS));
+                }
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
+    private void showPrivacyPolicy() {
+        new AlertDialog.Builder(this)
+            .setTitle("Privacy policy")
+            .setMessage("5G 4G Switch — Privacy Policy\n\n" +
+                "This app does not collect, store, share or transmit any personal data.\n\n" +
+                "- No internet: the app has no internet permission and never connects to any server.\n" +
+                "- No accounts, no ads, no analytics, no trackers.\n" +
+                "- Accessibility service: after you tap a button, it reads the text and buttons on Android's Phone Information and Testing / Debugging screens only, so it can tap the network option you chose. That screen content is used in the moment, on your phone only, and is never saved or sent anywhere.\n" +
+                "- Log: the app keeps a short on-device log of the steps it took (times and actions, no personal data). You can view, copy or clear it any time from the menu (top right). It is deleted when you clear it or uninstall the app.\n" +
+                "- Data deletion: because nothing is collected, there is nothing to delete on any server. Uninstalling the app removes all its on-device data.\n\n" +
+                "Questions: contact the developer via the app's store listing page.")
+            .setPositiveButton("Close", null)
             .show();
     }
 
